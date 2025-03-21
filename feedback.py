@@ -64,4 +64,17 @@ class FeedbackManager:
 
     def search_feedback(self, keyword: str, feedbacks: list):
         return [fb for fb in feedbacks if keyword.lower() in fb.message.lower()]
+    
+    def reply_feedback(self, feedback_index: int, reply: str):
+        feedbacks = FeedbackStorage.load_feedback()
+        if 0 <= feedback_index < len(feedbacks):
+            feedbacks[feedback_index].admin_reply = reply
+            with open(FeedbackStorage.FILE_NAME, mode='w', newline='') as file:
+                writer = csv.writer(file)
+                for fb in feedbacks:
+                    writer.writerow(fb.to_list())
+            print("Reply added successfully!")
+        else:
+            print("Invalid feedback selection.")
+
 
