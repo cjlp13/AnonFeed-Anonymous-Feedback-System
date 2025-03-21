@@ -53,3 +53,15 @@ class FeedbackManager:
 
     def view_feedback(self):
         return FeedbackStorage.load_feedback()
+    
+    class Admin:
+    def __init__(self, username: str, password: str):
+        self.username = username
+        self.password = password
+
+    def authenticate(self, input_password: str):
+        return self.password == input_password
+
+    def search_feedback(self, keyword: str, feedbacks: list):
+        return [fb for fb in feedbacks if keyword.lower() in fb.message.lower()]
+
