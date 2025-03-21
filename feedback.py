@@ -31,3 +31,25 @@ class FeedbackStorage:
         except FileNotFoundError:
             pass
         return feedback_list
+
+class FeedbackManager:
+    def __init__(self, limit: int):
+        self.limit = limit
+
+    def limit_feedback(self):
+        feedbacks = FeedbackStorage.load_feedback()
+        today = datetime.now().strftime('%Y-%m-%d')
+        todays_feedbacks = [fb for fb in feedbacks if fb.timestamp.startswith(today)]
+        return len(todays_feedbacks) < self.limit
+
+    def submit_feedback(self, user_id: str, message: str):
+        if not self.limit_feedback():
+            print("Daily feedback limit reached! Please try again tomorrow.")
+            return
+        
+        feedback = Feedback(user_id, message)
+        FeedbackStorage.save_feedback(feedback)
+        print("Feedback submitted successfully!")
+
+    def view_feedback(self):
+        return FeedbackStorage.load_feedback()
