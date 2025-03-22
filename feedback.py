@@ -10,7 +10,7 @@ class Feedback:
 
     def to_list(self):
         return [self.__username, self.__message, self.__timestamp, self.__admin_reply]
-    
+
     def get_username(self):
         return self.__username
 
@@ -75,7 +75,6 @@ class FeedbackManager:
         if not self.__limit_feedback():
             print("Daily feedback limit reached! Please try again tomorrow.")
             return
-        
         feedback = Feedback(username, message)
         self.__storage.save_feedback(feedback)
         print("Feedback submitted successfully!")
@@ -83,15 +82,15 @@ class FeedbackManager:
     def view_feedback(self):
         return self.__storage.get_feedback_list()
 
-    def __update_feedback(self):
+    def update_feedback(self):
         self.__storage.update_feedback()
-    
+   
 class Admin:
     def __init__(self, username: str, password: str):
         self.__username = username
         self.__password = password
 
-    def authenticate(self, input_password: str):
+    def get_password(self, input_password: str):
         return self.__password == input_password
 
     def search_feedback(self, keyword: str, feedbacks: list):
@@ -101,7 +100,7 @@ class Admin:
         feedbacks = manager.view_feedback()
         if 0 <= feedback_index < len(feedbacks):
             feedbacks[feedback_index].set_admin_reply(reply)
-            manager._FeedbackManager__update_feedback()
+            manager.update_feedback()
             print("Reply added successfully!")
         else:
             print("Invalid feedback selection.")
@@ -109,53 +108,54 @@ class Admin:
 if __name__ == "__main__":
     storage = FeedbackStorage()
     manager = FeedbackManager(limit=5, storage=storage)
-    admin = Admin(username="AdminUser", password="adminpass")
-    
+    admin = Admin(username="Admin", password="adminpass")
+   
     while True:
         print("\n1. Submit Feedback")
         print("2. View Feedback")
         print("3. Admin Login")
         print("4. Exit")
         choice = input("Enter your choice: ")
-        
+
         if choice == "1":
             username = input("Enter your username: ")
             message = input("Enter your feedback: ")
             manager.submit_feedback(username, message)
-        
+
         elif choice == "2":
             feedbacks = manager.view_feedback()
             if feedbacks:
                 for i, fb in enumerate(feedbacks, 1):
-                    print(f"{i}. User {fb.get_username()}: {fb.get_message()} (Reply: {fb.get_admin_reply()})")
+                    print(f"{i}. User - {fb.get_username()}: {fb.get_message()} (Reply - {admin.__username}: {fb.get_admin_reply()})")
             else:
                 print("No feedback available.")
-        
+       
         elif choice == "3":
             password = input("Enter admin password: ")
-            if admin.authenticate(password):
+            if admin.get_password(password):
+
                 while True:
                     print("\nAdmin Panel:")
                     print("1. Search Feedback")
                     print("2. Reply to Feedback")
                     print("3. Exit Admin Panel")
                     admin_choice = input("Enter your choice: ")
-                    
+
                     if admin_choice == "1":
                         keyword = input("Enter keyword to search: ")
                         feedbacks = manager.view_feedback()
                         results = admin.search_feedback(keyword, feedbacks)
                         if results:
                             for i, fb in enumerate(results, 1):
-                                print(f"{i}. User {fb.get_username()} - {fb.get_message()} (Reply: {fb.get_admin_reply()})")
+                                print(f"{i}. User - {fb.get_username()}: {fb.get_message()} (Reply - {admin.__username}: {fb.get_admin_reply()})")
                         else:
                             print("No matching feedback found.")
-                    
+                   
                     elif admin_choice == "2":
                         feedbacks = manager.view_feedback()
                         if feedbacks:
                             for i, fb in enumerate(feedbacks, 1):
-                                print(f"{i}. User {fb.get_username()} - {fb.get_message()} (Reply: {fb.get_admin_reply()})")
+                                print(f"{i}. User - {fb.get_username()}: {fb.get_message()} (Reply - {admin.__username}: {fb.get_admin_reply()})")
                             try:
                                 index = int(input("Enter feedback number to reply: ")) - 1
                                 if 0 <= index < len(feedbacks):
@@ -167,14 +167,14 @@ if __name__ == "__main__":
                                 print("Invalid input. Please enter a number.")
                         else:
                             print("No feedback available to reply to.")
-                    
+
                     elif admin_choice == "3":
                         break
                     else:
                         print("Invalid choice.")
             else:
                 print("Incorrect password!")
-        
+
         elif choice == "4":
             print("Exiting...")
             break
