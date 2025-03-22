@@ -87,7 +87,7 @@ class FeedbackManager:
    
 class Admin:
     def __init__(self, username: str, password: str):
-        self.__username = username
+        self.username = username
         self.__password = password
 
     def get_password(self, input_password: str):
@@ -126,7 +126,7 @@ if __name__ == "__main__":
             feedbacks = manager.view_feedback()
             if feedbacks:
                 for i, fb in enumerate(feedbacks, 1):
-                    print(f"{i}. User - {fb.get_username()}: {fb.get_message()} (Reply - {admin.__username}: {fb.get_admin_reply()})")
+                    print(f"{i}. User - {fb.get_username()}: {fb.get_message()} (Reply - {admin.username}: {fb.get_admin_reply()})")
             else:
                 print("No feedback available.")
        
@@ -147,7 +147,7 @@ if __name__ == "__main__":
                         results = admin.search_feedback(keyword, feedbacks)
                         if results:
                             for i, fb in enumerate(results, 1):
-                                print(f"{i}. User - {fb.get_username()}: {fb.get_message()} (Reply - {admin.__username}: {fb.get_admin_reply()})")
+                                print(f"{i}. User - {fb.get_username()}: {fb.get_message()} (Reply - {admin.username}: {fb.get_admin_reply()})")
                         else:
                             print("No matching feedback found.")
                    
@@ -155,7 +155,7 @@ if __name__ == "__main__":
                         feedbacks = manager.view_feedback()
                         if feedbacks:
                             for i, fb in enumerate(feedbacks, 1):
-                                print(f"{i}. User - {fb.get_username()}: {fb.get_message()} (Reply - {admin.__username}: {fb.get_admin_reply()})")
+                                print(f"{i}. User - {fb.get_username()}: {fb.get_message()} (Reply - {admin.username}: {fb.get_admin_reply()})")
                             try:
                                 index = int(input("Enter feedback number to reply: ")) - 1
                                 if 0 <= index < len(feedbacks):
