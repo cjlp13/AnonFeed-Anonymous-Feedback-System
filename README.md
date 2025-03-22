@@ -21,11 +21,11 @@
 1️⃣ **Clone the Repository**  
      git clone https://github.com/yourusername/AnonFeed.git  
 2️⃣ **Run the Application**  
-     python main.py
+     python feedback.py
 
 ## Usage Guide
   User Actions  
-  1️⃣ **Submit Feedback** – Enter your user ID and message.  
+  1️⃣ **Submit Feedback** – Enter your username and message.  
   2️⃣ **View Feedback** – Display all submitted feedback.  
 
   Admin Actions
