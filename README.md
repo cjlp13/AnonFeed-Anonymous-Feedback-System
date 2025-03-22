@@ -28,7 +28,7 @@
   1️⃣ **Submit Feedback** – Enter your username and message.  
   2️⃣ **View Feedback** – Display all submitted feedback.  
 
-  Admin Actions
+  Admin Actions  
   🔑 **Login as Admin** – Authenticate with a password.  
   🔍 **Search Feedback** – Find feedback using keywords.  
   💬 **Reply to Feedback** – Respond to a selected feedback entry.  
@@ -40,6 +40,6 @@
   🔑 Encryption – Secure feedback data for enhanced privacy.  
 
 ## Contributors
-  👨‍💻 Del Mundo, Ron Gabriel B.   
-  👨‍💻 Padua, Chris Justine L.  
-  👩‍💻 Panganiban, Rain Lyrra R.  
+  👨‍💻 [@Ronnieee1](https://github.com/Ronnieee1)  
+  👨‍💻 [@cjlp13](https://github.com/cjlp13)  
+  👩‍💻 [@rnlyra](https://github.com/rnlyra)  
