@@ -10,7 +10,7 @@ class Feedback:
 
     def to_list(self):
         return [self.__username, self.__message, self.__timestamp, self.__admin_reply]
-   
+
     def get_username(self):
         return self.__username
 
@@ -45,7 +45,7 @@ class FeedbackStorage:
             with open(FeedbackStorage.FILE_NAME, mode='r') as file:
                 reader = csv.reader(file)
                 for row in reader:
-                    if len(row) < 4:
+                    if len(row) < 4: 
                         continue
                     self.__feedback_list.append(Feedback(row[0], row[1], row[2], row[3]))
         except FileNotFoundError:
@@ -75,7 +75,6 @@ class FeedbackManager:
         if not self.__limit_feedback():
             print("Daily feedback limit reached! Please try again tomorrow.")
             return
-       
         feedback = Feedback(username, message)
         self.__storage.save_feedback(feedback)
         print("Feedback submitted successfully!")
@@ -117,12 +116,12 @@ if __name__ == "__main__":
         print("3. Admin Login")
         print("4. Exit")
         choice = input("Enter your choice: ")
-       
+
         if choice == "1":
             username = input("Enter your username: ")
             message = input("Enter your feedback: ")
             manager.submit_feedback(username, message)
-       
+
         elif choice == "2":
             feedbacks = manager.view_feedback()
             if feedbacks:
@@ -134,13 +133,14 @@ if __name__ == "__main__":
         elif choice == "3":
             password = input("Enter admin password: ")
             if admin.get_password(password):
+
                 while True:
                     print("\nAdmin Panel:")
                     print("1. Search Feedback")
                     print("2. Reply to Feedback")
                     print("3. Exit Admin Panel")
                     admin_choice = input("Enter your choice: ")
-                   
+
                     if admin_choice == "1":
                         keyword = input("Enter keyword to search: ")
                         feedbacks = manager.view_feedback()
@@ -148,7 +148,6 @@ if __name__ == "__main__":
                         if results:
                             for i, fb in enumerate(results, 1):
                                 print(f"{i}. User - {fb.get_username()}: {fb.get_message()} (Reply - {admin.__username}: {fb.get_admin_reply()})")
-
                         else:
                             print("No matching feedback found.")
                    
@@ -168,21 +167,16 @@ if __name__ == "__main__":
                                 print("Invalid input. Please enter a number.")
                         else:
                             print("No feedback available to reply to.")
-                   
+
                     elif admin_choice == "3":
                         break
                     else:
                         print("Invalid choice.")
             else:
                 print("Incorrect password!")
-       
+
         elif choice == "4":
             print("Exiting...")
             break
         else:
             print("Invalid choice.")
-
-
-
-
-
