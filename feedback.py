@@ -2,14 +2,15 @@ import csv
 from datetime import datetime
 
 class Feedback:
-    def __init__(self, username: str, message: str, timestamp=None, admin_reply=""):
+    def __init__(self, username: str, message: str, timestamp=None, admin_reply = "", category = "feedback"):
         self.__username = username
         self.__message = message
         self.__timestamp = timestamp if timestamp else datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.__admin_reply = admin_reply
+        self.__category = category
 
     def to_list(self):
-        return [self.__username, self.__message, self.__timestamp, self.__admin_reply]
+        return [self.__username, self.__message, self.__timestamp, self.__admin_reply, self.__category]
 
     def get_username(self):
         return self.__username
@@ -25,6 +26,12 @@ class Feedback:
 
     def set_admin_reply(self, reply: str):
         self.__admin_reply = reply
+
+    def get_category(self):
+        return self.__category
+    
+    def set_category(self, category: str):
+        self.__category = category
 
 class FeedbackStorage:
     FILE_NAME = "feedback.csv"
@@ -47,7 +54,7 @@ class FeedbackStorage:
                 for row in reader:
                     if len(row) < 4: 
                         continue
-                    self.__feedback_list.append(Feedback(row[0], row[1], row[2], row[3]))
+                    self.__feedback_list.append(Feedback(row[0], row[1], row[2], row[3], row[4]))
         except FileNotFoundError:
             pass
 
@@ -71,13 +78,14 @@ class FeedbackManager:
         todays_feedbacks = [fb for fb in feedbacks if fb.get_timestamp().startswith(today)]
         return len(todays_feedbacks) < self.__limit
 
-    def submit_feedback(self, username: str, message: str):
+    def submit_feedback(self, username: str, message: str, category: str):
         if not self.__limit_feedback():
             print("Daily feedback limit reached! Please try again tomorrow.")
             return
-        feedback = Feedback(username, message)
+        feedback = Feedback(username, message, category=category)
         self.__storage.save_feedback(feedback)
         print("Feedback submitted successfully!")
+
 
     def view_feedback(self):
         return self.__storage.get_feedback_list()
@@ -94,16 +102,12 @@ class Admin:
         return self.__password == input_password
 
     def search_feedback(self, keyword: str, feedbacks: list):
-        return [fb for fb in feedbacks if keyword.lower() in fb.get_message().lower()]
+        return [fb for fb in feedbacks if fb.get_category() == keyword]
 
-    def reply_feedback(self, feedback_index: int, reply: str, manager: FeedbackManager):
-        feedbacks = manager.view_feedback()
-        if 0 <= feedback_index < len(feedbacks):
-            feedbacks[feedback_index].set_admin_reply(reply)
-            manager.update_feedback()
-            print("Reply added successfully!")
-        else:
-            print("Invalid feedback selection.")
+    def reply_feedback(self, feedback: Feedback, reply: str, manager: FeedbackManager):
+        feedback.set_admin_reply(reply)
+
+
 
 if __name__ == "__main__":
     storage = FeedbackStorage()
@@ -118,9 +122,24 @@ if __name__ == "__main__":
         choice = input("Enter your choice: ")
 
         if choice == "1":
+            category_choice = int(input("In what category does your feedback fall into: \n\t[1] Misconducts: includes Harassment, Abuse, Discrimination, & Bias \n\t[2] Policy Issues: includes institutional practice, rules, or policy that promotes inequality \n\t[3] Suggestions: Ideas or Recommendations \n\t[4] Positive Feedbacks: Recognition of individuals, initiatives, and practices \nCategory: "))
+            match (category_choice):
+                case 1:
+                    category = "Misconducts"
+                case 2:
+                    category = "Policy Issues"
+                case 3:
+                    category = "Suggestions"
+                case 4:
+                    category = "Positive Feedbacks"
+                case _:
+                    print("Invalid category.")
+                    continue
+            
             username = input("Enter your username: ")
             message = input("Enter your feedback: ")
-            manager.submit_feedback(username, message)
+
+            manager.submit_feedback(username, message, category)
 
         elif choice == "2":
             feedbacks = manager.view_feedback()
@@ -133,7 +152,7 @@ if __name__ == "__main__":
         elif choice == "3":
             password = input("Enter admin password: ")
             if admin.get_password(password):
-
+                filtered_results = []
                 while True:
                     print("\nAdmin Panel:")
                     print("1. Search Feedback")
@@ -142,31 +161,63 @@ if __name__ == "__main__":
                     admin_choice = input("Enter your choice: ")
 
                     if admin_choice == "1":
-                        keyword = input("Enter keyword to search: ")
+                        category_choice = int(input("Choose the category of feedbacks to be displayed: \n\t[1] Misconducts \n\t[2] Policy Issues \n\t[3] Suggestions \n\t[4] Positive Feedbacks \nCategory: "))
+                        match (category_choice):
+                            case 1:
+                                keyword = "Misconducts"
+                            case 2:
+                                keyword = "Policy Issues"
+                            case 3:
+                                keyword = "Suggestions"
+                            case 4:
+                                keyword = "Positive Feedbacks"
+                            case _:
+                                print("Invalid category.")
+                                continue
+
                         feedbacks = manager.view_feedback()
-                        results = admin.search_feedback(keyword, feedbacks)
-                        if results:
-                            for i, fb in enumerate(results, 1):
+                        filtered_results = admin.search_feedback(keyword, feedbacks)
+                        if filtered_results:
+                            print(f"Feedbacks for {keyword}: \n")
+                            for i, fb in enumerate(filtered_results, 1):
                                 print(f"{i}. User - {fb.get_username()}: {fb.get_message()} (Reply - {admin.username}: {fb.get_admin_reply()})")
                         else:
                             print("No matching feedback found.")
                    
                     elif admin_choice == "2":
+                        category_choice = int(input("Choose the category of feedbacks to reply to: \n\t[1] Misconducts \n\t[2] Policy Issues \n\t[3] Suggestions \n\t[4] Positive Feedbacks \nCategory: "))
+                        match (category_choice):
+                            case 1:
+                                keyword = "Misconducts"
+                            case 2:
+                                keyword = "Policy Issues"
+                            case 3:
+                                keyword = "Suggestions"
+                            case 4:
+                                keyword = "Positive Feedbacks"
+                            case _:
+                                print("Invalid category.")
+                                continue
+
                         feedbacks = manager.view_feedback()
-                        if feedbacks:
-                            for i, fb in enumerate(feedbacks, 1):
+                        filtered_results = admin.search_feedback(keyword, feedbacks)
+                        if filtered_results:
+                            print(f"Feedbacks for {keyword}: \n")
+                            for i, fb in enumerate(filtered_results, 1):
                                 print(f"{i}. User - {fb.get_username()}: {fb.get_message()} (Reply - {admin.username}: {fb.get_admin_reply()})")
                             try:
                                 index = int(input("Enter feedback number to reply: ")) - 1
-                                if 0 <= index < len(feedbacks):
+                                if 0 <= index < len(filtered_results):
                                     reply = input("Enter your reply: ")
-                                    admin.reply_feedback(index, reply, manager)
+                                    admin.reply_feedback(filtered_results[index], reply, manager)
+                                    manager.update_feedback()
+                                    print("Reply added successfully!")
                                 else:
                                     print("Invalid feedback selection.")
                             except ValueError:
                                 print("Invalid input. Please enter a number.")
                         else:
-                            print("No feedback available to reply to.")
+                            print("No matching feedback found.")
 
                     elif admin_choice == "3":
                         break
