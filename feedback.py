@@ -79,9 +79,20 @@ class FeedbackManager:
         return len(todays_feedbacks) < self.__limit
 
     def submit_feedback(self, username: str, message: str, category: str):
+        if not username.strip() and not message.strip():
+            print("Submission failed: Make sure to fill the necessary fields (username and message).")
+            return
+        elif not username.strip():
+            print("Submission failed: Please enter you username.")
+            return
+        elif not message.strip():
+            print("Submission failed: Please enter your feedback.")
+            return
+        
         if not self.__limit_feedback():
             print("Daily feedback limit reached! Please try again tomorrow.")
             return
+
         feedback = Feedback(username, message, category=category)
         self.__storage.save_feedback(feedback)
         print("Feedback submitted successfully!")
@@ -122,15 +133,15 @@ if __name__ == "__main__":
         choice = input("Enter your choice: ")
 
         if choice == "1":
-            category_choice = int(input("In what category does your feedback fall into: \n\t[1] Misconducts: includes Harassment, Abuse, Discrimination, & Bias \n\t[2] Policy Issues: includes institutional practice, rules, or policy that promotes inequality \n\t[3] Suggestions: Ideas or Recommendations \n\t[4] Positive Feedbacks: Recognition of individuals, initiatives, and practices \nCategory: "))
+            category_choice = input("In what category does your feedback fall into: \n\t[1] Misconducts: includes Harassment, Abuse, Discrimination, & Bias \n\t[2] Policy Issues: includes institutional practice, rules, or policy that promotes inequality \n\t[3] Suggestions: Ideas or Recommendations \n\t[4] Positive Feedbacks: Recognition of individuals, initiatives, and practices \nCategory: ")
             match (category_choice):
-                case 1:
+                case "1":
                     category = "Misconducts"
-                case 2:
+                case "2":
                     category = "Policy Issues"
-                case 3:
+                case "3":
                     category = "Suggestions"
-                case 4:
+                case "4":
                     category = "Positive Feedbacks"
                 case _:
                     print("Invalid category.")
@@ -161,15 +172,15 @@ if __name__ == "__main__":
                     admin_choice = input("Enter your choice: ")
 
                     if admin_choice == "1":
-                        category_choice = int(input("Choose the category of feedbacks to be displayed: \n\t[1] Misconducts \n\t[2] Policy Issues \n\t[3] Suggestions \n\t[4] Positive Feedbacks \nCategory: "))
+                        category_choice = input("Choose the category of feedbacks to be displayed: \n\t[1] Misconducts \n\t[2] Policy Issues \n\t[3] Suggestions \n\t[4] Positive Feedbacks \nCategory: ")
                         match (category_choice):
-                            case 1:
+                            case "1":
                                 keyword = "Misconducts"
-                            case 2:
+                            case "2":
                                 keyword = "Policy Issues"
-                            case 3:
+                            case "3":
                                 keyword = "Suggestions"
-                            case 4:
+                            case "4":
                                 keyword = "Positive Feedbacks"
                             case _:
                                 print("Invalid category.")
@@ -185,15 +196,15 @@ if __name__ == "__main__":
                             print("No matching feedback found.")
                    
                     elif admin_choice == "2":
-                        category_choice = int(input("Choose the category of feedbacks to reply to: \n\t[1] Misconducts \n\t[2] Policy Issues \n\t[3] Suggestions \n\t[4] Positive Feedbacks \nCategory: "))
+                        category_choice = input("Choose the category of feedbacks to reply to: \n\t[1] Misconducts \n\t[2] Policy Issues \n\t[3] Suggestions \n\t[4] Positive Feedbacks \nCategory: ")
                         match (category_choice):
-                            case 1:
+                            case "1":
                                 keyword = "Misconducts"
-                            case 2:
+                            case "2":
                                 keyword = "Policy Issues"
-                            case 3:
+                            case "3":
                                 keyword = "Suggestions"
-                            case 4:
+                            case "4":
                                 keyword = "Positive Feedbacks"
                             case _:
                                 print("Invalid category.")
