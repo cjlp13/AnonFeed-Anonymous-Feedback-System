@@ -80,23 +80,21 @@ class FeedbackManager:
 
     def submit_feedback(self, username: str, message: str, category: str):
         if not username.strip() and not message.strip():
-            print("Submission failed: Make sure to fill the necessary fields (username and message).")
-            return
+            return"Submission failed: Make sure to fill the necessary fields (username and message)."
+            
         elif not username.strip():
-            print("Submission failed: Please enter you username.")
-            return
+            return"Submission failed: Please enter you username."
+            
         elif not message.strip():
-            print("Submission failed: Please enter your feedback.")
-            return
+            return"Submission failed: Please enter your feedback."
+            
         
         if not self.__limit_feedback():
-            print("Daily feedback limit reached! Please try again tomorrow.")
-            return
+            return"Daily feedback limit reached! Please try again tomorrow."
 
         feedback = Feedback(username, message, category=category)
         self.__storage.save_feedback(feedback)
-        print("Feedback submitted successfully!")
-
+        return"Feedback submitted successfully!"
 
     def view_feedback(self):
         return self.__storage.get_feedback_list()
@@ -116,7 +114,12 @@ class Admin:
         return [fb for fb in feedbacks if fb.get_category() == keyword]
 
     def reply_feedback(self, feedback: Feedback, reply: str, manager: FeedbackManager):
+        if not reply.strip():
+            return "Reply failed: Please enter a reply message."
+        
         feedback.set_admin_reply(reply)
+        manager.update_feedback()
+        return "Reply added successfully!"
 
 
 
@@ -150,7 +153,8 @@ if __name__ == "__main__":
             username = input("Enter your username: ")
             message = input("Enter your feedback: ")
 
-            manager.submit_feedback(username, message, category)
+            confirmation = manager.submit_feedback(username, message, category)
+            print(confirmation)
 
         elif choice == "2":
             feedbacks = manager.view_feedback()
@@ -220,9 +224,8 @@ if __name__ == "__main__":
                                 index = int(input("Enter feedback number to reply: ")) - 1
                                 if 0 <= index < len(filtered_results):
                                     reply = input("Enter your reply: ")
-                                    admin.reply_feedback(filtered_results[index], reply, manager)
-                                    manager.update_feedback()
-                                    print("Reply added successfully!")
+                                    confirmation = admin.reply_feedback(filtered_results[index], reply, manager)
+                                    print(confirmation)
                                 else:
                                     print("Invalid feedback selection.")
                             except ValueError:
